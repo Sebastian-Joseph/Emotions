@@ -19,10 +19,9 @@ test {
     useJUnitPlatform()
 }
 
-project.ext.lwjglVersion = "3.2.3"
+project.ext.lwjglVersion = "3.3.1"
 project.ext.jomlVersion = "1.10.5"
 project.ext.lwjglNatives = "natives-windows"
-
 
 dependencies {
     implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
