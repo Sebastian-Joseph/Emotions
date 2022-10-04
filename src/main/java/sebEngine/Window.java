@@ -17,6 +17,7 @@ public class Window {
     private int height, width;
     private String title;
     private long glfwWindow;
+    private float r, g, b, a;
 
     private static Window window;
 
@@ -24,6 +25,10 @@ public class Window {
         this.height = 1080;
         this.width = 1920;
         this.title = "Emotions";
+        this.r = 1;
+        this.g = 1;
+        this.b = 1;
+        this.a = 1;
     }
 
     public static Window get() {
@@ -49,7 +54,7 @@ public class Window {
     }
 
     public void init() {
-        // Setup an error callback. The default implementation
+        // Set up an error callback. The default implementation
         // will print the error message in System.err.
         GLFWErrorCallback.createPrint(System.err).set();
 
@@ -70,6 +75,12 @@ public class Window {
             throw new IllegalStateException("Failed to create the GLFW window");
         }
 
+        // Setup a key callback. It will be called every time a key is pressed, repeated or released.
+        glfwSetCursorPosCallback(glfwWindow, MouseListener::mousePosCallback);
+        glfwSetMouseButtonCallback(glfwWindow, MouseListener::mouseButtonCallback);
+        glfwSetScrollCallback(glfwWindow, MouseListener::mouseScrollCallback);
+        glfwSetKeyCallback(glfwWindow, KeyListener::keyCallback);
+
         // Make the OpenGL context current
         glfwMakeContextCurrent(glfwWindow);
         // Enable v-sync
@@ -84,7 +95,7 @@ public class Window {
     public void loop() {
             while(!glfwWindowShouldClose(glfwWindow))  {
                 glfwPollEvents();
-                glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+                glClearColor(r, g, b, a);
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 glfwSwapBuffers(glfwWindow);
 
