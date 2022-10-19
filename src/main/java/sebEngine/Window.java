@@ -4,6 +4,7 @@ import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.*;
+import util.Time;
 
 import java.nio.*;
 
@@ -13,22 +14,43 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
+// Creates the class window which displays the game
+
 public class Window {
     private int height, width;
     private String title;
     private long glfwWindow;
-    private float r, g, b, a;
+    public float r, g, b, a;
 
     private static Window window;
+    private static Scene currentScene;
 
     private Window() {
         this.height = 1080;
         this.width = 1920;
+        a = 1;
         this.title = "Emotions";
         this.r = 1;
         this.g = 1;
         this.b = 1;
         this.a = 1;
+    }
+
+    // Changes scene so game can move between scenes
+    
+    public static void changeScene(int newScene) {
+        switch (newScene) {
+            case 0:
+                currentScene = new LevelEditorScene();
+                //currentScene.init();
+                break;
+            case 1:
+                currentScene = new LevelScene();
+                break;
+            default:
+                assert false : "Unknown scene '" + newScene + "'";
+                break;
+        }
     }
 
     public static Window get() {
@@ -90,15 +112,32 @@ public class Window {
         glfwShowWindow(glfwWindow);
 
         GL.createCapabilities();
+
+        Window.changeScene(0);
     }
 
     public void loop() {
-            while(!glfwWindowShouldClose(glfwWindow))  {
-                glfwPollEvents();
-                glClearColor(r, g, b, a);
-                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-                glfwSwapBuffers(glfwWindow);
+        float beginTime = Time.getTime();
+        float endTime;
+        float dt = -1.0f;
 
+
+        while(!glfwWindowShouldClose(glfwWindow))  {
+            glfwPollEvents();
+
+            glClearColor(r, g, b, a);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            if (dt >= 0) {
+                currentScene.update(dt);
             }
+
+
+            glfwSwapBuffers(glfwWindow);
+
+            endTime = Time.getTime();
+            dt = endTime - beginTime;
+            beginTime = endTime;
+        }
     }
 }
